@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="per.chowhound.hfut.mapper.DefectMapper">
+    
+    <resultMap type="per.chowhound.hfut.domain.Defect" id="DefectResult">
+        <result property="defectId"    column="defect_id"    />
+        <result property="name"    column="name"    />
+        <result property="detail"    column="detail"    />
+    </resultMap>
+
+    <sql id="selectDefectVo">
+        select defect_id, name, detail from defect
+    </sql>
+
+    <select id="selectDefectList" parameterType="per.chowhound.hfut.domain.Defect" resultMap="DefectResult">
+        <include refid="selectDefectVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="detail != null  and detail != ''"> and detail = #{detail}</if>
+        </where>
+    </select>
+    
+    <select id="selectDefectByDefectId" parameterType="Long" resultMap="DefectResult">
+        <include refid="selectDefectVo"/>
+        where defect_id = #{defectId}
+    </select>
+
+    <insert id="insertDefect" parameterType="per.chowhound.hfut.domain.Defect" useGeneratedKeys="true" keyProperty="defectId">
+        insert into defect
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">name,</if>
+            <if test="detail != null and detail != ''">detail,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="detail != null and detail != ''">#{detail},</if>
+         </trim>
+    </insert>
+
+    <update id="updateDefect" parameterType="per.chowhound.hfut.domain.Defect">
+        update defect
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="detail != null and detail != ''">detail = #{detail},</if>
+        </trim>
+        where defect_id = #{defectId}
+    </update>
+
+    <delete id="deleteDefectByDefectId" parameterType="Long">
+        delete from defect where defect_id = #{defectId}
+    </delete>
+
+    <delete id="deleteDefectByDefectIds" parameterType="String">
+        delete from defect where defect_id in 
+        <foreach item="defectId" collection="array" open="(" separator="," close=")">
+            #{defectId}
+        </foreach>
+    </delete>
+</mapper>

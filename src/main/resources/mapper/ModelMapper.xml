@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="per.chowhound.hfut.mapper.ModelMapper">
+    
+    <resultMap type="per.chowhound.hfut.domain.Model" id="ModelResult">
+        <result property="modelId"    column="model_id"    />
+        <result property="url"    column="url"    />
+        <result property="detail"    column="detail"    />
+    </resultMap>
+
+    <sql id="selectModelVo">
+        select model_id, url, detail from model
+    </sql>
+
+    <select id="selectModelList" parameterType="per.chowhound.hfut.domain.Model" resultMap="ModelResult">
+        <include refid="selectModelVo"/>
+        <where>  
+            <if test="url != null  and url != ''"> and url = #{url}</if>
+            <if test="detail != null  and detail != ''"> and detail = #{detail}</if>
+        </where>
+    </select>
+    
+    <select id="selectModelByModelId" parameterType="Long" resultMap="ModelResult">
+        <include refid="selectModelVo"/>
+        where model_id = #{modelId}
+    </select>
+
+    <insert id="insertModel" parameterType="per.chowhound.hfut.domain.Model" useGeneratedKeys="true" keyProperty="modelId">
+        insert into model
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="url != null and url != ''">url,</if>
+            <if test="detail != null and detail != ''">detail,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="url != null and url != ''">#{url},</if>
+            <if test="detail != null and detail != ''">#{detail},</if>
+         </trim>
+    </insert>
+
+    <update id="updateModel" parameterType="per.chowhound.hfut.domain.Model">
+        update model
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="url != null and url != ''">url = #{url},</if>
+            <if test="detail != null and detail != ''">detail = #{detail},</if>
+        </trim>
+        where model_id = #{modelId}
+    </update>
+
+    <delete id="deleteModelByModelId" parameterType="Long">
+        delete from model where model_id = #{modelId}
+    </delete>
+
+    <delete id="deleteModelByModelIds" parameterType="String">
+        delete from model where model_id in 
+        <foreach item="modelId" collection="array" open="(" separator="," close=")">
+            #{modelId}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="per.chowhound.hfut.mapper.RoleMapper">
+    
+    <resultMap type="per.chowhound.hfut.domain.Role" id="RoleResult">
+        <result property="roleId"    column="role_id"    />
+        <result property="roleName"    column="role_name"    />
+    </resultMap>
+
+    <sql id="selectRoleVo">
+        select role_id, role_name from role
+    </sql>
+
+    <select id="selectRoleList" parameterType="per.chowhound.hfut.domain.Role" resultMap="RoleResult">
+        <include refid="selectRoleVo"/>
+        <where>  
+            <if test="roleName != null  and roleName != ''"> and role_name like concat('%', #{roleName}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectRoleByRoleId" parameterType="Long" resultMap="RoleResult">
+        <include refid="selectRoleVo"/>
+        where role_id = #{roleId}
+    </select>
+
+    <insert id="insertRole" parameterType="per.chowhound.hfut.domain.Role" useGeneratedKeys="true" keyProperty="roleId">
+        insert into role
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="roleName != null and roleName != ''">role_name,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="roleName != null and roleName != ''">#{roleName},</if>
+         </trim>
+    </insert>
+
+    <update id="updateRole" parameterType="per.chowhound.hfut.domain.Role">
+        update role
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="roleName != null and roleName != ''">role_name = #{roleName},</if>
+        </trim>
+        where role_id = #{roleId}
+    </update>
+
+    <delete id="deleteRoleByRoleId" parameterType="Long">
+        delete from role where role_id = #{roleId}
+    </delete>
+
+    <delete id="deleteRoleByRoleIds" parameterType="String">
+        delete from role where role_id in 
+        <foreach item="roleId" collection="array" open="(" separator="," close=")">
+            #{roleId}
+        </foreach>
+    </delete>
+</mapper>
